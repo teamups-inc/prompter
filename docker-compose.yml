@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000" # expose local port
+    volumes:
+      - .:/usr/src/app # mount local working directory for live reload
+      - /usr/src/app/node_modules # mount node_modules for caching
+    depends_on:
+      - mongo # wait for mongo service container
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017 # mongo container address
+
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
