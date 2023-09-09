@@ -3,26 +3,30 @@ import OpenAI from 'openai';
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-interface PromptCompletionRequestPayload {
+export interface PromptCompletionRequestPayload {
     prompt: string;
     open_ai_model: string;
 }
 
-interface PromptCompletionResponsePayload {
+export interface PromptCompletionResponsePayload {
     completion: string;
 }
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
+    console.log('POST /api/prompt-completion');
+
     // extract payload from request
     const requestPayload: PromptCompletionRequestPayload = await request.json();
 
     // execute prompt
+    console.log('Executing prompt...');
     const completion = await openai.chat.completions.create({
         messages: [{ role: 'user', content: requestPayload.prompt }],
         model: requestPayload.open_ai_model
     });
 
     // construct response
+    console.log('Prompt complete');
     const responsePayload: PromptCompletionResponsePayload = {
         completion: completion.choices[0].message.content ?? '',
     };
