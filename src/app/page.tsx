@@ -1,15 +1,18 @@
-import mongoClientPromise from '@/services/mongodb';
 import styles from './page.module.css'
+import PromptInputAndOutputSection from '@/components/PromptInputAndOutputSection';
 
 export default async function Home() {
-  await mongoClientPromise;
-  console.log('Successfully connected to MongoDB');
-  
   return (
     <main className={styles.main}>
-      <div>
-        Hello. Your tiny NextJS app is up and running :)
+      <div style={rootDivStyle}>
+        <PromptInputAndOutputSection />
       </div>
     </main>
   );
 }
+
+const rootDivStyle: React.CSSProperties = {
+  paddingLeft: '48px',
+  paddingRight: '48px',
+  width: '100%'
+};
