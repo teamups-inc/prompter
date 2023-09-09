@@ -5,7 +5,10 @@ import TextArea from 'antd/es/input/TextArea';
 import { Button} from 'antd';
 import { useState } from 'react';
 import useMakeRequest from '@/utils/useMakeRequest';
-import { PromptCompletionRequestPayload, PromptCompletionResponsePayload } from '@/app/api/prompt-completion/route';
+import { 
+    PromptCompletionRequestPayload, 
+    PromptCompletionResponsePayload 
+} from '@/app/api/prompt-completion/route';
 import PromptOutputContent from './PromptOutputContent';
 
 export type TOutputRenderStyle = 'text' | 'json';
