@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import PromptInputAndOutputSection from './PromptInputAndOutputSection';
-import { ConfigProvider, Timeline } from 'antd';
+import { ConfigProvider, Timeline, theme } from 'antd';
 
 interface ISectionItem {
     key: number;
@@ -58,11 +58,7 @@ export default function PromptsPage() {
         <div>
             <ConfigProvider
                 theme={{
-                    components: {
-                        Timeline: {
-                            tailColor: 'rgba(253, 253, 253, 0.12)'
-                        }
-                    }
+                    algorithm: theme.darkAlgorithm,
                 }}
             >
                 <Timeline

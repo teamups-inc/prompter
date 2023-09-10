@@ -12,6 +12,7 @@ import {
 } from '@/app/api/prompt-completion/route';
 import PromptOutputContent from './PromptOutputContent';
 import { TSectionMutationOpFunction } from './PromptsPage';
+import PromptSectionTitle from './PromptSectionTitle';
 
 export type TOutputRenderStyle = 'text' | 'json' | 'html';
 
@@ -59,6 +60,8 @@ export default function PromptInputAndOutputSection(props: Props) {
     
     return (
         <>
+            <PromptSectionTitle />
+            <hr style={{ margin: '16px 0' }} />
             <Row gutter={48} style={rowStyle}>
                 <Col span={12}>
                     <h3 style={marginBottomStyle}>Prompt input</h3>
@@ -74,7 +77,7 @@ export default function PromptInputAndOutputSection(props: Props) {
                         ghost 
                         loading={promptRequestData.isLoading} 
                         onClick={onClickGenerateCompletion}
-                        style={isPromptButtonDisabled ? disabledButtonStyle : undefined}
+                        type='primary'
                     >
                         ✨ Generate completion
                     </Button>
@@ -104,7 +107,7 @@ export default function PromptInputAndOutputSection(props: Props) {
                                 icon={<PlusCircleOutlined />} 
                                 onClick={() => onClickAddSection(id, 'add')}
                                 shape='round' 
-                                type='primary' 
+                                type='text' 
                             />
                         </Tooltip>
                         {
@@ -119,7 +122,7 @@ export default function PromptInputAndOutputSection(props: Props) {
                                     icon={<DeleteOutlined />} 
                                     onClick={() => onClickAddSection(id, 'delete')}
                                     shape='round' 
-                                    type='primary' 
+                                    type='text' 
                                 />
                             </Tooltip>
                         }
