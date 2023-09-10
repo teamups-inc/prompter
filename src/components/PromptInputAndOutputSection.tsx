@@ -1,6 +1,6 @@
 'use client';
 
-import { Col, Row, Select, Space } from 'antd';
+import { Col, Row, Select, Space, Tooltip } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
 import { DeleteOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import { Button} from 'antd';
@@ -94,22 +94,34 @@ export default function PromptInputAndOutputSection(props: Props) {
                 </Col>
                 <Col span={24} style={addSectionButtonColStyle}>
                     <Space>
-                        <Button 
-                            ghost
-                            icon={<PlusCircleOutlined />} 
-                            onClick={() => onClickAddSection(id, 'add')}
-                            shape='round' 
-                            type='primary' 
-                        />
-                        {
-                            isDeleteEnabled && <Button 
-                                danger
+                        <Tooltip 
+                            mouseEnterDelay={1}
+                            placement='top' 
+                            title='Add new section'
+                        >
+                            <Button 
                                 ghost
-                                icon={<DeleteOutlined />} 
-                                onClick={() => onClickAddSection(id, 'delete')}
+                                icon={<PlusCircleOutlined />} 
+                                onClick={() => onClickAddSection(id, 'add')}
                                 shape='round' 
                                 type='primary' 
                             />
+                        </Tooltip>
+                        {
+                            isDeleteEnabled && <Tooltip
+                                mouseEnterDelay={1}
+                                placement='top' 
+                                title='Delete section'
+                            >
+                                <Button 
+                                    danger
+                                    ghost
+                                    icon={<DeleteOutlined />} 
+                                    onClick={() => onClickAddSection(id, 'delete')}
+                                    shape='round' 
+                                    type='primary' 
+                                />
+                            </Tooltip>
                         }
                     </Space>
                 </Col>
