@@ -56,17 +56,16 @@ export default function PromptInputAndOutputSection(props: Props) {
     const [openAIModel, setOpenAIModel] = useState<
         TOpenAIModel
     >('gpt-3.5-turbo');
+    const [isRequestComplete, setIsRequestComplete] = useState(false);
     const [promptRequestData, makePromptRequest] = useMakeRequest<
         PromptCompletionRequestPayload,
         PromptCompletionResponsePayload
     >(PROMPT_ENDPOINT);
 
-    const isPromptButtonDisabled = promptInput.length === 0;
-
     const onRequestComplete = (requestResult: TRequestCompletionResult) => {
+        setIsRequestComplete(true);
         onCompleteRequest(id, requestResult);
     }
-    
     const onClickGenerateCompletion = () => {
         makePromptRequest(
             'POST', 
@@ -77,6 +76,10 @@ export default function PromptInputAndOutputSection(props: Props) {
             onRequestComplete
         );
     }
+
+    const areControlsDisabled = isRequestComplete;
+    const isPromptButtonDisabled = promptInput.length === 0
+        || areControlsDisabled;
     
     return (
         <>
@@ -87,9 +90,15 @@ export default function PromptInputAndOutputSection(props: Props) {
                     <h3 style={marginBottomStyle}>Prompt input</h3>
                     <TextArea 
                         autoSize={{ minRows: 4 }}
+                        disabled={areControlsDisabled}
                         onChange={evt => setPromptInput(evt.target.value)}
                         placeholder='What are we prompting today?' 
-                        style={marginBottomStyle}
+                        style={{
+                            ...marginBottomStyle,
+                            color: areControlsDisabled
+                                ? 'grey'
+                                : undefined
+                        }}
                         value={promptInput}
                     />
                     <Space direction='horizontal'>
@@ -103,6 +112,7 @@ export default function PromptInputAndOutputSection(props: Props) {
                             ✨ Generate completion
                         </Button>
                         <Select<TOpenAIModel>
+                            disabled={areControlsDisabled}
                             style={{ width: 160 }}
                             onChange={openAIModel => setOpenAIModel(openAIModel)}
                             options={OPENAI_MODEL_OPTIONS}
@@ -119,8 +129,9 @@ export default function PromptInputAndOutputSection(props: Props) {
                         value={promptOutputStyle}
                     />
                     <PromptOutputContent
-                        renderStyle={promptOutputStyle} 
+                        promptError={promptRequestData.error}
                         promptOutputString={promptRequestData.data?.completion ?? ''}
+                        renderStyle={promptOutputStyle} 
                     />
                 </Col>
                 <Col span={24} style={addSectionButtonColStyle}>

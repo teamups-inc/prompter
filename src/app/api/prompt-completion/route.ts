@@ -17,6 +17,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     // extract payload from request
     const requestPayload: PromptCompletionRequestPayload = await request.json();
+    if (requestPayload.prompt.trim().length === 0) {
+        throw new Error('Found empty prompt input');
+    }
 
     // execute prompt
     console.log('Executing prompt...');

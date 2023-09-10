@@ -1,11 +1,22 @@
 import { TOutputRenderStyle } from './PromptInputAndOutputSection';
 
 interface PromptOutputContentProps {
+    promptError: Error | null;
     promptOutputString: string;
     renderStyle: TOutputRenderStyle;
 }
 
 export default function PromptOutputContent(props: PromptOutputContentProps) {
+    if (props.promptError != null) {
+        return (
+            <>
+                <p style={{ ...marginBottomStyle, color: 'red' }}>
+                    Request error: {props.promptError.toString()}
+                </p>
+            </>
+        )
+    }
+    
     if (props.renderStyle === 'text') {
         return (
             <p>{props.promptOutputString}</p>
@@ -36,8 +47,9 @@ export default function PromptOutputContent(props: PromptOutputContentProps) {
                 <p style={marginBottomStyle}>Reverting to text content.</p>
                 <hr style={marginBottomStyle} />
                 <PromptOutputContent 
-                    renderStyle='text' 
+                    promptError={props.promptError}
                     promptOutputString={props.promptOutputString}
+                    renderStyle='text' 
                 />
             </>
         );
