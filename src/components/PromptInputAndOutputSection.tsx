@@ -2,6 +2,7 @@
 
 import { Col, Row, Select } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
+import { PlusCircleOutlined } from '@ant-design/icons';
 import { Button} from 'antd';
 import { useState } from 'react';
 import useMakeRequest from '@/utils/useMakeRequest';
@@ -11,7 +12,7 @@ import {
 } from '@/app/api/prompt-completion/route';
 import PromptOutputContent from './PromptOutputContent';
 
-export type TOutputRenderStyle = 'text' | 'json';
+export type TOutputRenderStyle = 'text' | 'json' | 'html';
 
 interface IPromptOutputRenderOption {
     value: TOutputRenderStyle;
@@ -23,9 +24,15 @@ const OPENAI_DEFAULT_MODEL = 'gpt-3.5-turbo';
 const PROMPT_OUTPUT_RENDER_OPTIONS: IPromptOutputRenderOption[] = [
     { value: 'text', label: 'Text' },
     { value: 'json', label: 'JSON' },
+    { value: 'html', label: 'HTML' },
 ];
 
-export default function PromptInputAndOutputSection() {
+interface Props {
+    id: number;
+    onClickAddSection: (currentSectionIndex: number) => void;
+}
+
+export default function PromptInputAndOutputSection(props: Props) {
     const [promptInput, setPromptInput] = useState('');
     const [promptOutputStyle, setPromptOutputStyle] = useState<
         TOutputRenderStyle
@@ -81,6 +88,14 @@ export default function PromptInputAndOutputSection() {
                         promptOutputString={promptRequestData.data?.completion ?? ''}
                     />
                 </Col>
+                <Col span={24} style={addSectionButtonColStyle}>
+                    <Button 
+                        icon={<PlusCircleOutlined />} 
+                        onClick={() => props.onClickAddSection(props.id)}
+                        shape='round' 
+                        type='primary' 
+                    />
+                </Col>
             </Row>
         </>
     )
@@ -99,3 +114,9 @@ const disabledButtonStyle: React.CSSProperties = {
     borderColor: 'grey',
     color: 'grey',
 };
+
+const addSectionButtonColStyle: React.CSSProperties = {
+    display: 'flex', 
+    flexDirection: 'row', 
+    justifyContent: 'center' 
+}

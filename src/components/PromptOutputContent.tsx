@@ -12,6 +12,14 @@ export default function PromptOutputContent(props: PromptOutputContentProps) {
         );
     }
 
+    if (props.renderStyle === 'html') {
+        return (
+            <div 
+                dangerouslySetInnerHTML={{ __html: props.promptOutputString }} 
+            />
+        );
+    }
+
     let jsonContent = null;
     let jsonParseError = null;
     try {
