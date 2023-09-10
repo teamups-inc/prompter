@@ -1,8 +1,8 @@
 'use client';
 
-import { Col, Row, Select } from 'antd';
+import { Col, Row, Select, Space } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
-import { PlusCircleOutlined } from '@ant-design/icons';
+import { DeleteOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import { Button} from 'antd';
 import { useState } from 'react';
 import useMakeRequest from '@/utils/useMakeRequest';
@@ -11,6 +11,7 @@ import {
     PromptCompletionResponsePayload 
 } from '@/app/api/prompt-completion/route';
 import PromptOutputContent from './PromptOutputContent';
+import { TSectionMutationOpFunction } from './PromptsPage';
 
 export type TOutputRenderStyle = 'text' | 'json' | 'html';
 
@@ -29,10 +30,13 @@ const PROMPT_OUTPUT_RENDER_OPTIONS: IPromptOutputRenderOption[] = [
 
 interface Props {
     id: number;
-    onClickAddSection: (currentSectionIndex: number) => void;
+    isDeleteEnabled: boolean;
+    onClickAddSection: TSectionMutationOpFunction;
 }
 
 export default function PromptInputAndOutputSection(props: Props) {
+    const { id, isDeleteEnabled, onClickAddSection } = props;
+    
     const [promptInput, setPromptInput] = useState('');
     const [promptOutputStyle, setPromptOutputStyle] = useState<
         TOutputRenderStyle
@@ -89,12 +93,25 @@ export default function PromptInputAndOutputSection(props: Props) {
                     />
                 </Col>
                 <Col span={24} style={addSectionButtonColStyle}>
-                    <Button 
-                        icon={<PlusCircleOutlined />} 
-                        onClick={() => props.onClickAddSection(props.id)}
-                        shape='round' 
-                        type='primary' 
-                    />
+                    <Space>
+                        <Button 
+                            ghost
+                            icon={<PlusCircleOutlined />} 
+                            onClick={() => onClickAddSection(id, 'add')}
+                            shape='round' 
+                            type='primary' 
+                        />
+                        {
+                            isDeleteEnabled && <Button 
+                                danger
+                                ghost
+                                icon={<DeleteOutlined />} 
+                                onClick={() => onClickAddSection(id, 'delete')}
+                                shape='round' 
+                                type='primary' 
+                            />
+                        }
+                    </Space>
                 </Col>
             </Row>
         </>

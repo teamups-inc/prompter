@@ -5,31 +5,53 @@ import PromptInputAndOutputSection from './PromptInputAndOutputSection';
 import { ConfigProvider, Timeline } from 'antd';
 
 interface ISectionItem {
-    id: number;
-    item: {
-        key: number;
-        children: React.ReactNode,
-        style: React.CSSProperties
-    }
+    key: number;
+    children: React.ReactNode,
+    style: React.CSSProperties
 }
+
+type TSectionMutationOpType = 'add' | 'delete';
+export type TSectionMutationOpFunction = (key: number, op: TSectionMutationOpType) => void;
 
 export default function PromptsPage() {
     const [promptSections, setPromptsSections] = useState<ISectionItem[]>([]);
-    const onClickAddSection = (clickedSectionId: number) => {
+    const onClickAddSection: TSectionMutationOpFunction = (
+        clickedSectionKey: number,
+        op: 'add' | 'delete'
+    ) => {
         setPromptsSections(currentSections => {
-            const currentSectionIndex = currentSections.findIndex(({ id }) => id === clickedSectionId);
+            const currentSectionIndex = currentSections.findIndex(
+                ({ key }) => key === clickedSectionKey
+            );
+
+            if (op === 'delete') {
+                return currentSections
+                    .toSpliced(
+                        currentSectionIndex, // start index
+                        1, // num items to delete
+                    );
+            }
+            
             return currentSections
                 .toSpliced(
                     currentSectionIndex + 1, // start index
                     0, // num items to delete
-                    getSectionItem(onClickAddSection), // item to insert
+                    getSectionItem(
+                        true, // newly-added sections can be deleted
+                        onClickAddSection
+                    ), // item to insert
                 );
         });
     }
 
     // init first section once click handler is defined
     useEffect(() => {
-        setPromptsSections([getSectionItem(onClickAddSection)])
+        setPromptsSections([
+            getSectionItem(
+                false, // don't enable delete for first section
+                onClickAddSection,
+            )
+        ])
     }, []);
     
     return (
@@ -44,7 +66,7 @@ export default function PromptsPage() {
                 }}
             >
                 <Timeline
-                    items={promptSections.map(({ item }) => item)}
+                    items={promptSections}
                 />
             </ConfigProvider>
         </div>
@@ -52,24 +74,23 @@ export default function PromptsPage() {
 }
 
 function getSectionItem(
-    onClickAddSection: (id: number) => void
+    isDeleteEnabled: boolean,
+    onClickAddSection: TSectionMutationOpFunction
 ): ISectionItem {
-    const id = Date.now();
+    const key = Date.now();
     return {
-        id,
-        item: {
-            key: id,
-            children: (
-                <div style={{ padding: '60px 0'}}>
-                    <PromptInputAndOutputSection 
-                        id={id}
-                        onClickAddSection={onClickAddSection}
-                    />
-                </div>
-            ),
-            style: {
-                color: 'white'
-            }
+        key,
+        children: (
+            <div style={{ padding: '60px 0'}}>
+                <PromptInputAndOutputSection 
+                    id={key}
+                    isDeleteEnabled={isDeleteEnabled}
+                    onClickAddSection={onClickAddSection}
+                />
+            </div>
+        ),
+        style: {
+            color: 'white'
         }
     };
 }
