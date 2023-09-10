@@ -15,14 +15,23 @@ import { TSectionMutationOpFunction } from './PromptsPage';
 import PromptSectionTitle from './PromptSectionTitle';
 
 export type TOutputRenderStyle = 'text' | 'json' | 'html';
-
 interface IPromptOutputRenderOption {
     value: TOutputRenderStyle;
     label: string;
 }
 
+export type TOpenAIModel = 'gpt-3.5-turbo' | 'gpt-4';
+interface IOpenAIModelSelectOption {
+    value: TOpenAIModel;
+    label: string;
+}
+
 const PROMPT_ENDPOINT = '/api/prompt-completion';
 const OPENAI_DEFAULT_MODEL = 'gpt-3.5-turbo';
+const OPENAI_MODEL_OPTIONS: IOpenAIModelSelectOption[] = [
+    { value: 'gpt-3.5-turbo', label: 'gpt-3.5-turbo' },
+    { value: 'gpt-4', label: 'gpt-4' },
+];
 const PROMPT_OUTPUT_RENDER_OPTIONS: IPromptOutputRenderOption[] = [
     { value: 'text', label: 'Text' },
     { value: 'json', label: 'JSON' },
@@ -42,6 +51,9 @@ export default function PromptInputAndOutputSection(props: Props) {
     const [promptOutputStyle, setPromptOutputStyle] = useState<
         TOutputRenderStyle
     >('text');
+    const [openAIModel, setOpenAIModel] = useState<
+        TOpenAIModel
+    >('gpt-3.5-turbo');
     const [promptRequestData, makePromptRequest] = useMakeRequest<
         PromptCompletionRequestPayload,
         PromptCompletionResponsePayload
@@ -53,7 +65,7 @@ export default function PromptInputAndOutputSection(props: Props) {
             'POST', 
             { 
                 prompt: promptInput, 
-                open_ai_model: OPENAI_DEFAULT_MODEL 
+                open_ai_model: openAIModel 
             }
         );
     }
@@ -72,15 +84,23 @@ export default function PromptInputAndOutputSection(props: Props) {
                         style={marginBottomStyle}
                         value={promptInput}
                     />
-                    <Button 
-                        disabled={isPromptButtonDisabled}
-                        ghost 
-                        loading={promptRequestData.isLoading} 
-                        onClick={onClickGenerateCompletion}
-                        type='primary'
-                    >
-                        ✨ Generate completion
-                    </Button>
+                    <Space direction='horizontal'>
+                        <Button 
+                            disabled={isPromptButtonDisabled}
+                            ghost 
+                            loading={promptRequestData.isLoading} 
+                            onClick={onClickGenerateCompletion}
+                            type='primary'
+                        >
+                            ✨ Generate completion
+                        </Button>
+                        <Select<TOpenAIModel>
+                            style={{ width: 160 }}
+                            onChange={openAIModel => setOpenAIModel(openAIModel)}
+                            options={OPENAI_MODEL_OPTIONS}
+                            value={openAIModel}
+                        />
+                    </Space>
                 </Col>
                 <Col span={12}>
                     <h3 style={marginBottomStyle}>Prompt output</h3>
@@ -103,7 +123,6 @@ export default function PromptInputAndOutputSection(props: Props) {
                             title='Add new section'
                         >
                             <Button 
-                                ghost
                                 icon={<PlusCircleOutlined />} 
                                 onClick={() => onClickAddSection(id, 'add')}
                                 shape='round' 
@@ -118,7 +137,6 @@ export default function PromptInputAndOutputSection(props: Props) {
                             >
                                 <Button 
                                     danger
-                                    ghost
                                     icon={<DeleteOutlined />} 
                                     onClick={() => onClickAddSection(id, 'delete')}
                                     shape='round' 
@@ -150,5 +168,6 @@ const disabledButtonStyle: React.CSSProperties = {
 const addSectionButtonColStyle: React.CSSProperties = {
     display: 'flex', 
     flexDirection: 'row', 
-    justifyContent: 'center' 
+    justifyContent: 'center',
+    marginTop: 16, 
 }
