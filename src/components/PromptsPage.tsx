@@ -13,7 +13,6 @@ interface ISectionItem {
     }
 }
 
-
 export default function PromptsPage() {
     const [promptSections, setPromptsSections] = useState<ISectionItem[]>([]);
     const onClickAddSection = (clickedSectionId: number) => {
