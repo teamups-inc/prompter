@@ -2,10 +2,16 @@ import { CheckCircleOutlined, EditOutlined } from '@ant-design/icons';
 import { Space, Input, Button } from 'antd';
 import { useState } from 'react';
 
+interface Props {
+    title: string;
+    setTitle: (title: string) => void;
+}
+
 const EMPTY_TITLE = '';
-export default function PromptSectionTitle() {
-    const [isEditMode, setIsEditMode] = useState(true);
-    const [title, setTitle] = useState(EMPTY_TITLE);
+export default function PromptSectionTitle(props: Props) {
+    const { title, setTitle } = props;
+    
+    const [isEditMode, setIsEditMode] = useState(title === EMPTY_TITLE);
 
     if (isEditMode) {
         return (

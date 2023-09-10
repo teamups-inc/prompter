@@ -2,7 +2,7 @@
 
 import { Col, Row, Select, Space, Tooltip } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
-import { DeleteOutlined, PlusCircleOutlined } from '@ant-design/icons';
+import { CopyOutlined, DeleteOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import { Button} from 'antd';
 import { useState } from 'react';
 import useMakeRequest from '@/utils/useMakeRequest';
@@ -39,23 +39,40 @@ const PROMPT_OUTPUT_RENDER_OPTIONS: IPromptOutputRenderOption[] = [
     { value: 'html', label: 'HTML' },
 ];
 
+export interface InitialSectionProps {
+    label: string;
+    promptInput: string;
+    renderStyle: TOutputRenderStyle;
+    openAIModel: TOpenAIModel;
+}
+
 interface Props {
     id: number;
+    initialProps?: InitialSectionProps;
     isDeleteEnabled: boolean;
     onClickAddSection: TSectionMutationOpFunction;
     onCompleteRequest: TSectionCompletionFunction;
 }
 
 export default function PromptInputAndOutputSection(props: Props) {
-    const { id, isDeleteEnabled, onClickAddSection, onCompleteRequest } = props;
+    const { id, isDeleteEnabled, onClickAddSection, onCompleteRequest, initialProps } = props;
     
-    const [promptInput, setPromptInput] = useState('');
+    const [promptInput, setPromptInput] = useState(
+        initialProps?.promptInput ?? ''
+    );
+    const [promptTitle, setPromptTitle] = useState(
+        initialProps?.label ?? ''
+    );
     const [promptOutputStyle, setPromptOutputStyle] = useState<
         TOutputRenderStyle
-    >('text');
+    >(
+        initialProps?.renderStyle ?? 'text'
+    );
     const [openAIModel, setOpenAIModel] = useState<
         TOpenAIModel
-    >('gpt-3.5-turbo');
+    >(
+        initialProps?.openAIModel ?? OPENAI_MODEL_OPTIONS[0].value
+    );
     const [isRequestComplete, setIsRequestComplete] = useState(false);
     const [promptRequestData, makePromptRequest] = useMakeRequest<
         PromptCompletionRequestPayload,
@@ -77,25 +94,31 @@ export default function PromptInputAndOutputSection(props: Props) {
         );
     }
 
-    const areControlsDisabled = isRequestComplete;
     const isPromptButtonDisabled = promptInput.length === 0
-        || areControlsDisabled;
+        || isRequestComplete;
+    const isTextAreaDisabled = isRequestComplete
+        || promptRequestData.isLoading;
+    const isModelSelectorDisabled = isRequestComplete
+        || promptRequestData.isLoading;
     
     return (
         <>
-            <PromptSectionTitle />
+            <PromptSectionTitle
+                title={promptTitle}
+                setTitle={setPromptTitle}
+            />
             <hr style={{ margin: '16px 0' }} />
             <Row gutter={48} style={rowStyle}>
                 <Col span={12}>
                     <h3 style={marginBottomStyle}>Prompt input</h3>
                     <TextArea 
                         autoSize={{ minRows: 4 }}
-                        disabled={areControlsDisabled}
+                        disabled={isTextAreaDisabled}
                         onChange={evt => setPromptInput(evt.target.value)}
                         placeholder='What are we prompting today?' 
                         style={{
                             ...marginBottomStyle,
-                            color: areControlsDisabled
+                            color: isTextAreaDisabled
                                 ? 'grey'
                                 : undefined
                         }}
@@ -112,7 +135,7 @@ export default function PromptInputAndOutputSection(props: Props) {
                             ✨ Generate completion
                         </Button>
                         <Select<TOpenAIModel>
-                            disabled={areControlsDisabled}
+                            disabled={isModelSelectorDisabled}
                             style={{ width: 160 }}
                             onChange={openAIModel => setOpenAIModel(openAIModel)}
                             options={OPENAI_MODEL_OPTIONS}
@@ -144,6 +167,27 @@ export default function PromptInputAndOutputSection(props: Props) {
                             <Button 
                                 icon={<PlusCircleOutlined />} 
                                 onClick={() => onClickAddSection(id, 'add')}
+                                shape='round' 
+                                type='text' 
+                            />
+                        </Tooltip>
+                        <Tooltip 
+                            mouseEnterDelay={1}
+                            placement='top' 
+                            title='Copy section'
+                        >
+                            <Button 
+                                icon={<CopyOutlined />} 
+                                onClick={() => onClickAddSection(
+                                    id, 
+                                    'add',
+                                    {
+                                        label: promptTitle,
+                                        promptInput: promptInput,
+                                        renderStyle: promptOutputStyle,
+                                        openAIModel: openAIModel
+                                    }
+                                )}
                                 shape='round' 
                                 type='text' 
                             />

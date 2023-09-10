@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import PromptInputAndOutputSection, { TRequestCompletionResult } from './PromptInputAndOutputSection';
+import PromptInputAndOutputSection, { InitialSectionProps, TRequestCompletionResult } from './PromptInputAndOutputSection';
 import { ConfigProvider, Timeline, theme } from 'antd';
 
 interface ISectionItem {
@@ -12,8 +12,15 @@ interface ISectionItem {
 }
 
 type TSectionMutationOpType = 'add' | 'delete';
-export type TSectionMutationOpFunction = (key: number, op: TSectionMutationOpType) => void;
-export type TSectionCompletionFunction = (key: number, reqResult: TRequestCompletionResult) => void;
+export type TSectionMutationOpFunction = (
+    key: number, 
+    op: TSectionMutationOpType, 
+    initialProps?: InitialSectionProps
+) => void;
+export type TSectionCompletionFunction = (
+    key: number, 
+    reqResult: TRequestCompletionResult
+) => void;
 
 export default function PromptsPage() {
     const [promptSections, setPromptsSections] = useState<ISectionItem[]>([]);
@@ -41,7 +48,8 @@ export default function PromptsPage() {
 
     const onClickAddSection: TSectionMutationOpFunction = (
         clickedSectionKey: number,
-        op: 'add' | 'delete'
+        op: 'add' | 'delete',
+        initialProps?: InitialSectionProps
     ) => {
         setPromptsSections(currentSections => {
             const currentSectionIndex = currentSections.findIndex(
@@ -63,7 +71,8 @@ export default function PromptsPage() {
                     getSectionItem(
                         true, // newly-added sections can be deleted
                         onClickAddSection,
-                        onCompleteSectionRequest
+                        onCompleteSectionRequest,
+                        initialProps,
                     ), // item to insert
                 );
         });
@@ -99,6 +108,7 @@ function getSectionItem(
     isDeleteEnabled: boolean,
     onClickAddSection: TSectionMutationOpFunction,
     onCompleteSectionRequest: TSectionCompletionFunction,
+    initialProps?: InitialSectionProps
 ): ISectionItem {
     const key = Date.now();
     return {
@@ -107,6 +117,7 @@ function getSectionItem(
             <div style={{ padding: '60px 0'}}>
                 <PromptInputAndOutputSection 
                     id={key}
+                    initialProps={initialProps}
                     isDeleteEnabled={isDeleteEnabled}
                     onClickAddSection={onClickAddSection}
                     onCompleteRequest={onCompleteSectionRequest}
