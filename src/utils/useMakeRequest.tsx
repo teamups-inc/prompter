@@ -1,9 +1,11 @@
+import { TRequestCompletionResult } from '@/components/PromptInputAndOutputSection';
 import { useState } from 'react';
 
 interface FetchState<T> {
     data: T | null;
-    isLoading: boolean;
     error: Error | null;
+    isLoading: boolean;
+    isComplete: boolean;
 };
 
 type RequestHTTPMethod = 'POST';
@@ -15,18 +17,21 @@ function useMakeRequest<
     FetchState<ResponsePayloadType>, 
     (
         httpMethod: RequestHTTPMethod,
-        requestPayload: RequestPayloadType
+        requestPayload: RequestPayloadType,
+        onComplete: (requestResult: TRequestCompletionResult) => void,
     ) => void,
 ] {
         const [requestState, setRequestState] = useState<FetchState<ResponsePayloadType>>({
             data: null,
+            error: null,
             isLoading: false,
-            error: null
+            isComplete: false,
         });
 
         const makeRequest = (
             httpMethod: RequestHTTPMethod, 
             requestPayload: RequestPayloadType,
+            onComplete: (requestResult: TRequestCompletionResult) => void,
         ) => {
             setRequestState(state => ({ ...state, isLoading: true }));
 
@@ -46,16 +51,20 @@ function useMakeRequest<
                 .then<void>(data => {
                     setRequestState({
                         data: data,
+                        error: null,
                         isLoading: false,
-                        error: null
+                        isComplete: true,
                     });
+                    onComplete('success');
                 })
                 .catch(error => {
                     setRequestState({
                         data: null,
+                        error: error,
                         isLoading: false,
-                        error: error
+                        isComplete: true,
                     });
+                    onComplete('error');
                 });
         }
 

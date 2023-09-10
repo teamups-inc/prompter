@@ -11,7 +11,7 @@ import {
     PromptCompletionResponsePayload 
 } from '@/app/api/prompt-completion/route';
 import PromptOutputContent from './PromptOutputContent';
-import { TSectionMutationOpFunction } from './PromptsPage';
+import { TSectionCompletionFunction, TSectionMutationOpFunction } from './PromptsPage';
 import PromptSectionTitle from './PromptSectionTitle';
 
 export type TOutputRenderStyle = 'text' | 'json' | 'html';
@@ -26,8 +26,9 @@ interface IOpenAIModelSelectOption {
     label: string;
 }
 
+export type TRequestCompletionResult = 'success' | 'error';
+
 const PROMPT_ENDPOINT = '/api/prompt-completion';
-const OPENAI_DEFAULT_MODEL = 'gpt-3.5-turbo';
 const OPENAI_MODEL_OPTIONS: IOpenAIModelSelectOption[] = [
     { value: 'gpt-3.5-turbo', label: 'gpt-3.5-turbo' },
     { value: 'gpt-4', label: 'gpt-4' },
@@ -42,10 +43,11 @@ interface Props {
     id: number;
     isDeleteEnabled: boolean;
     onClickAddSection: TSectionMutationOpFunction;
+    onCompleteRequest: TSectionCompletionFunction;
 }
 
 export default function PromptInputAndOutputSection(props: Props) {
-    const { id, isDeleteEnabled, onClickAddSection } = props;
+    const { id, isDeleteEnabled, onClickAddSection, onCompleteRequest } = props;
     
     const [promptInput, setPromptInput] = useState('');
     const [promptOutputStyle, setPromptOutputStyle] = useState<
@@ -60,13 +62,19 @@ export default function PromptInputAndOutputSection(props: Props) {
     >(PROMPT_ENDPOINT);
 
     const isPromptButtonDisabled = promptInput.length === 0;
+
+    const onRequestComplete = (requestResult: TRequestCompletionResult) => {
+        onCompleteRequest(id, requestResult);
+    }
+    
     const onClickGenerateCompletion = () => {
         makePromptRequest(
             'POST', 
             { 
                 prompt: promptInput, 
                 open_ai_model: openAIModel 
-            }
+            },
+            onRequestComplete
         );
     }
     
