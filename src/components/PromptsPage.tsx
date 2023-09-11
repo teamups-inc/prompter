@@ -1,7 +1,10 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import PromptInputAndOutputSection, { InitialSectionProps, TRequestCompletionResult } from './PromptInputAndOutputSection';
+import PromptInputAndOutputSection, { 
+    InitialSectionProps, 
+    TRequestCompletionResult 
+} from './PromptInputAndOutputSection';
 import { ConfigProvider, Timeline, theme } from 'antd';
 
 interface ISectionItem {

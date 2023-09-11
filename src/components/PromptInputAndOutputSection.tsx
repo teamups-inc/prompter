@@ -55,7 +55,13 @@ interface Props {
 }
 
 export default function PromptInputAndOutputSection(props: Props) {
-    const { id, isDeleteEnabled, onClickAddSection, onCompleteRequest, initialProps } = props;
+    const { 
+        id, 
+        isDeleteEnabled, 
+        onClickAddSection, 
+        onCompleteRequest, 
+        initialProps 
+    } = props;
     
     const [promptInput, setPromptInput] = useState(
         initialProps?.promptInput ?? ''
