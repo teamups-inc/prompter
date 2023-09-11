@@ -174,7 +174,7 @@ export default function PromptInputAndOutputSection(props: Props) {
                         <Tooltip 
                             mouseEnterDelay={1}
                             placement='top' 
-                            title='Copy section'
+                            title='Duplicate section'
                         >
                             <Button 
                                 icon={<CopyOutlined />} 
