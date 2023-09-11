@@ -4,6 +4,10 @@ Lightweight NextJS app w/ SSR used for running and comparing AI prompt completio
 
 <img width="1470" alt="Screenshot 2023-09-10 at 10 31 01 AM" src="https://github.com/teamups-inc/prompter/assets/24460948/635f4513-45b1-40ce-9ed8-f7ce4998884e">
 
+## Architecture
+
+![prompt architecture](https://github.com/teamups-inc/prompter/assets/24460948/070c261f-305f-47cf-97a3-ed89f46e6092)
+
 ## Quick start
 1. Clone the repo: `git clone https://github.com/teamups-inc/prompter.git`
 
