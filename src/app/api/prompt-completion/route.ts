@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
+import { CompletionUsage } from 'openai/resources/index.mjs';
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -9,7 +10,8 @@ export interface PromptCompletionRequestPayload {
 }
 
 export interface PromptCompletionResponsePayload {
-    completion: string;
+    completion: string | null;
+    usage?: CompletionUsage;
 }
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
@@ -31,7 +33,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // construct response
     console.log('Prompt complete');
     const responsePayload: PromptCompletionResponsePayload = {
-        completion: completion.choices[0].message.content ?? '',
+        completion: completion.choices[0].message.content,
+        usage: completion.usage
     };
 
     // return response
