@@ -20,19 +20,34 @@ interface IPromptOutputRenderOption {
     label: string;
 }
 
-export type TOpenAIModel = 'gpt-3.5-turbo' | 'gpt-4';
+export type TOpenAIModel = 'gpt-3.5-turbo' | 'gpt-4' | 'gpt-4-32k';
 interface IOpenAIModelSelectOption {
     value: TOpenAIModel;
     label: string;
+    cost_per_1k_tokens_usd: number;
 }
 
 export type TRequestCompletionResult = 'success' | 'error';
 
 const PROMPT_ENDPOINT = '/api/prompt-completion';
 const OPENAI_MODEL_OPTIONS: IOpenAIModelSelectOption[] = [
-    { value: 'gpt-3.5-turbo', label: 'gpt-3.5-turbo' },
-    { value: 'gpt-4', label: 'gpt-4' },
+    {
+        value: 'gpt-3.5-turbo',
+        label: 'gpt-3.5-turbo',
+        cost_per_1k_tokens_usd: 0.0015,
+    },
+    { 
+        value: 'gpt-4', 
+        label: 'gpt-4',
+        cost_per_1k_tokens_usd: 0.03,
+    },
+    { 
+        value: 'gpt-4-32k', 
+        label: 'gpt-4-32k',
+        cost_per_1k_tokens_usd: 0.06,
+    },
 ];
+const OPEN_AI_DEFAULT_MODEL: TOpenAIModel = 'gpt-4';
 const PROMPT_OUTPUT_RENDER_OPTIONS: IPromptOutputRenderOption[] = [
     { value: 'text', label: 'Text' },
     { value: 'json', label: 'JSON' },
@@ -77,7 +92,7 @@ export default function PromptInputAndOutputSection(props: Props) {
     const [openAIModel, setOpenAIModel] = useState<
         TOpenAIModel
     >(
-        initialProps?.openAIModel ?? OPENAI_MODEL_OPTIONS[0].value
+        initialProps?.openAIModel ?? OPEN_AI_DEFAULT_MODEL
     );
     const [isRequestComplete, setIsRequestComplete] = useState(false);
     const [promptRequestData, makePromptRequest] = useMakeRequest<
@@ -106,6 +121,21 @@ export default function PromptInputAndOutputSection(props: Props) {
         || promptRequestData.isLoading;
     const isModelSelectorDisabled = isRequestComplete
         || promptRequestData.isLoading;
+
+    const openAIModelDetails = OPENAI_MODEL_OPTIONS.find(
+        ({ value }) => value === openAIModel
+    )!;
+    const totalTokens = promptRequestData.data?.usage?.total_tokens;
+    const estimatedCost = Number(
+        (((totalTokens || 0)/1000) * openAIModelDetails.cost_per_1k_tokens_usd)
+            .toPrecision(2)
+    );
+    const tokenUsageDetails = (
+        <>
+            <span>Total tokens: {totalTokens}</span>
+            <span>Cost: ${estimatedCost}</span>
+        </>
+    );
     
     return (
         <>
@@ -147,6 +177,7 @@ export default function PromptInputAndOutputSection(props: Props) {
                             options={OPENAI_MODEL_OPTIONS}
                             value={openAIModel}
                         />
+                        {isRequestComplete && tokenUsageDetails}
                     </Space>
                 </Col>
                 <Col span={12}>
