@@ -20,7 +20,7 @@ interface IPromptOutputRenderOption {
     label: string;
 }
 
-export type TOpenAIModel = 'gpt-3.5-turbo' | 'gpt-4' | 'gpt-4-32k';
+export type TOpenAIModel = 'gpt-3.5-turbo' | 'gpt-4' | 'gpt-4-32k' | 'gpt-4-1106-preview';
 interface IOpenAIModelSelectOption {
     value: TOpenAIModel;
     label: string;
@@ -46,8 +46,13 @@ const OPENAI_MODEL_OPTIONS: IOpenAIModelSelectOption[] = [
         label: 'gpt-4-32k',
         cost_per_1k_tokens_usd: 0.06,
     },
+    { 
+        value: 'gpt-4-1106-preview', 
+        label: 'gpt-4-turbo',
+        cost_per_1k_tokens_usd: 0.01,
+    },
 ];
-const OPEN_AI_DEFAULT_MODEL: TOpenAIModel = 'gpt-4';
+const OPEN_AI_DEFAULT_MODEL: TOpenAIModel = 'gpt-4-1106-preview';
 const PROMPT_OUTPUT_RENDER_OPTIONS: IPromptOutputRenderOption[] = [
     { value: 'text', label: 'Text' },
     { value: 'json', label: 'JSON' },
